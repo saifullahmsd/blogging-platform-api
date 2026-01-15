@@ -1,0 +1,54 @@
+# Logic
+node_modules
+jspm_packages
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Environment
+.env*
+.env.development
+.env.test
+.env.production
+# Keep .env.example
+!.env.example
+
+# Runtime Data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+.nyc_output/
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tgz
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+
+# Testing
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional: if you use these
+.eslintcache
+.stylelintcache
