@@ -15,6 +15,7 @@ const requestLogger = require('../middlewares/logger.middleware');
 const errorHandler = require('../middlewares/error.middleware');
 const healthRoutes = require('../routes/health.routes');
 const v1Routes = require('../routes/v1');
+const upload = require('../middlewares/multer.middleware');
 
 const app = express();
 
@@ -52,6 +53,24 @@ app.get('/', (req, res) => {
         docs: '/api/v1/docs'
     });
 });
+
+app.post('/upload-local', upload.single('avatar'), (req, res) => {
+
+    console.log(`File uploaded: ${req.file}`);
+
+    if (!req.file) {
+        return res.status(400).json({
+            success: false,
+            message: 'File not uploaded'
+        });
+    }
+    return res.status(200).json({
+        success: true,
+        message: 'File uploaded successfully',
+        data: req.file
+    });
+
+})
 
 app.use('*', (req, res) => {
     res.status(404).json({

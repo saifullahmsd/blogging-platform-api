@@ -49,7 +49,19 @@ const env = cleanEnv(process.env, {
     LOCK_TIME: str({
         default: '2h',
         desc: 'Account lock duration'
-    })
+    }),
+    // Cloudinary Configuration 
+    CLOUDINARY_CLOUD_NAME: str({ desc: 'Cloudinary cloud name' }),
+    CLOUDINARY_API_KEY: str({ desc: 'Cloudinary Api key' }),
+    CLOUDINARY_API_SECRET: str({ desc: 'Cloudinary Api secret' }),
+    // Upload Configuration
+    MAX_FILE_SIZE: num({ default: 5242880 }), // 5MB
+    MAX_AVATAR_SIZE: num({ default: 2097152 }), // 2MB
+    ALLOWED_IMAGE_TYPES: str({ default: 'image/jpeg,image/png,image/webp,image/gif' }),
+
+    CLOUDINARY_AVATAR_FOLDER: str({ default: 'blogging-platform/avatars' }),
+    CLOUDINARY_POST_FOLDER: str({ default: 'blogging-platform/posts' }),
+    CLOUDINARY_CONTENT_FOLDER: str({ default: 'blogging-platform/content' })
 }, {
     reporter: ({ errors }) => {
         if (Object.keys(errors).length > 0) {

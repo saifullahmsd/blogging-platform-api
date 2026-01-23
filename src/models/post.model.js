@@ -61,7 +61,34 @@ const postSchema = new mongoose.Schema({
         default: 0
     },
     featuredImage: {
-        type: String
+        url: {
+            type: String,
+            default: null
+        },
+        public_id: {
+            type: String,
+            default: null
+        },
+        width: Number,
+        height: Number
+    },
+
+    // For tracking content images used in post body
+    contentImages: [{
+        url: String,
+        public_id: String,
+        width: Number,
+        height: Number
+    }],
+
+    commentsCount: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    commentsEnabled: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true,
@@ -76,14 +103,11 @@ const postSchema = new mongoose.Schema({
     }
 });
 
-// Compound indexes for common query patterns
 postSchema.index({ title: 'text', content: 'text', category: 'text' });
 postSchema.index({ author: 1, status: 1, createdAt: -1 });
 postSchema.index({ status: 1, publishedAt: -1 });
 
-/**
- * Virtual: Estimated reading time based on average 200 words/minute.
- */
+
 postSchema.virtual('readingTime').get(function () {
     const wordsPerMinute = 200;
     const wordCount = this.content.split(/\s+/).length;
@@ -91,8 +115,21 @@ postSchema.virtual('readingTime').get(function () {
 });
 
 /**
+ * Virtual: Comments for a post.
+ * Filters out deleted comments and top-level comments.
+ */
+postSchema.virtual('comments', {
+    ref: 'Comment',
+    localField: '_id',
+    foreignField: 'post',
+    options: {
+        match: { isDeleted: false, parentComment: null },
+        sort: { createdAt: -1 }
+    }
+});
+
+/**
  * Pre-save: Auto-generates URL slug from title.
- * Sets publishedAt timestamp when status changes to 'published'.
  */
 postSchema.pre('save', function (next) {
     if (this.isModified('title')) {
@@ -110,10 +147,29 @@ postSchema.pre('save', function (next) {
     next();
 });
 
+postSchema.pre('remove', async function (next) {
+    try {
+        const { deleteImage, deleteMultipleImages } = require('../config/cloudinary');
+
+        // Delete featured image
+        if (this.featuredImage?.public_id) {
+            await deleteImage(this.featuredImage.public_id);
+        }
+
+        // Delete content images
+        if (this.contentImages && this.contentImages.length > 0) {
+            const publicIds = this.contentImages.map(img => img.public_id);
+            await deleteMultipleImages(publicIds);
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
 /**
  * Full-text search across title, content, and category.
- * @param {string} term - Search query
- * @returns {Query} Mongoose query sorted by text relevance score
  */
 postSchema.statics.searchPosts = function (term) {
     return this.find({

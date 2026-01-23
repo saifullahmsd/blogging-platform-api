@@ -10,7 +10,7 @@ const logger = require('../config/logger');
 
 class PostService {
     /**
-     * Create a new blog post with duplicate title check.
+     * Create a new blog post 
      */
     async createPost(postData) {
         const existingPost = await Post.findOne({
@@ -32,7 +32,6 @@ class PostService {
     async getAllPosts(query = {}) {
         const { term, page = PAGINATION.DEFAULT_PAGE, limit = PAGINATION.DEFAULT_LIMIT } = query;
 
-        // Clamp pagination values to valid range
         const pageNum = Math.max(1, parseInt(page));
         const limitNum = Math.min(
             PAGINATION.MAX_LIMIT,
@@ -80,7 +79,17 @@ class PostService {
      * Get single post by ID.
      */
     async getPostById(id) {
-        const post = await Post.findById(id).lean();
+        const post = await Post.findById(id)
+            .populate('author', 'name avatar bio')
+            .populate({
+                path: 'comments',
+                options: { limit: 5 },
+                populate: {
+                    path: 'author',
+                    select: 'name avatar'
+                }
+            })
+            .lean();
 
         if (!post) {
             throw new NotFoundError('Post');
