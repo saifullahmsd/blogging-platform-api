@@ -85,10 +85,8 @@ class UploadService {
                 throw new ApiError(403, 'You can only upload images to your own posts');
             }
 
-            // Validate dimensions (min 800x400)
             await validateImageDimensions(fileBuffer, 800, 400);
 
-            // Process image: resize to 1200x630 (optimal for social sharing)
             const processedImage = await processImage(fileBuffer, {
                 width: 1200,
                 height: 630,
@@ -97,7 +95,6 @@ class UploadService {
                 fit: 'cover'
             });
 
-            // Upload to Cloudinary
             const result = await uploadImage(processedImage, {
                 folder: env.CLOUDINARY_POST_FOLDER,
                 public_id: `post_${postId}_featured`,
@@ -136,10 +133,8 @@ class UploadService {
     async uploadContentImages(userId, files) {
         try {
             const uploadPromises = files.map(async (file, index) => {
-                // Validate dimensions
                 await validateImageDimensions(file.buffer, 200, 200);
 
-                // Process image
                 const processedImage = await processImage(file.buffer, {
                     width: 1000,
                     quality: 85,
@@ -147,7 +142,6 @@ class UploadService {
                     fit: 'inside'
                 });
 
-                // Upload to Cloudinary
                 const result = await uploadImage(processedImage, {
                     folder: env.CLOUDINARY_CONTENT_FOLDER,
                     public_id: `content_${userId}_${Date.now()}_${index}`,

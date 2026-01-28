@@ -7,9 +7,49 @@ const router = express.Router();
 const mongoose = require('mongoose');
 
 /**
- * @desc    System health status
- * @route   GET /health
- * @access  Public
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: System Health Check
+ *     description: Returns the current health status of the API including database connection, memory usage, uptime, and environment. Use this endpoint for monitoring and load balancer health checks.
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: System is healthy, database is connected
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 uptime:
+ *                   type: number
+ *                   example: 123.456
+ *                 timestamp:
+ *                   type: number
+ *                   example: 1769196436978
+ *                 status:
+ *                   type: string
+ *                   example: OK
+ *                 environment:
+ *                   type: string
+ *                   example: development
+ *                 services:
+ *                   type: object
+ *                   properties:
+ *                     database:
+ *                       type: string
+ *                       example: connected
+ *                     memory:
+ *                       type: object
+ *                       properties:
+ *                         used:
+ *                           type: string
+ *                           example: 30MB
+ *                         total:
+ *                           type: string
+ *                           example: 31MB
+ *       503:
+ *         description: System is degraded, database is disconnected
  */
 router.get('/', async (req, res) => {
     const health = {

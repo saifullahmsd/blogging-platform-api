@@ -117,7 +117,7 @@ commentSchema.index({ post: 1, createdAt: -1 });
 commentSchema.index({ post: 1, parentComment: 1, createdAt: 1 });
 commentSchema.index({ author: 1, createdAt: -1 });
 commentSchema.index({ post: 1, isDeleted: 1, createdAt: -1 });
-commentSchema.index({ path: 1 });
+
 
 commentSchema.virtual('replies', {
     ref: 'Comment',

@@ -5,7 +5,7 @@
  */
 const User = require('../models/user.model');
 const JWTUtils = require('../utils/jwt');
-const { ApiError, NotFoundError, ValidationError } = require('../utils/ApiError');
+const { ApiError, NotFoundError, ValidationError, ConflictError } = require('../utils/ApiError');
 const logger = require('../config/logger');
 
 class AuthService {
@@ -16,7 +16,7 @@ class AuthService {
         try {
             const existingUser = await User.findOne({ email: userData.email });
             if (existingUser) {
-                throw new ValidationError('Email already registered');
+                throw new ConflictError('Email already registered');
             }
 
             const user = await User.create({
@@ -35,7 +35,7 @@ class AuthService {
             return { user, tokens };
         } catch (error) {
             if (error.code === 11000) {
-                throw new ValidationError('Email already registered');
+                throw new ConflictError('Email already registered');
             }
             throw error;
         }

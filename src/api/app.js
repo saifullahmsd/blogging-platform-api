@@ -15,7 +15,10 @@ const requestLogger = require('../middlewares/logger.middleware');
 const errorHandler = require('../middlewares/error.middleware');
 const healthRoutes = require('../routes/health.routes');
 const v1Routes = require('../routes/v1');
-const upload = require('../middlewares/multer.middleware');
+const upload = require('../middlewares/upload.middleware');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('../config/swagger');
+
 
 const app = express();
 
@@ -44,7 +47,36 @@ app.use(requestLogger);
 app.use('/health', healthRoutes);
 app.use('/api/v1', v1Routes);
 
-// Root Route (Documentation Info)
+app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: API Health Check
+ *     description: Returns the status, message, and version of the API.
+ *     tags: [General]
+ *     responses:
+ *       200:
+ *         description: API is running successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Blogging Platform API
+ *                 version:
+ *                   type: string
+ *                   example: 1.0.0
+ *                 docs:
+ *                   type: string
+ *                   example: /api/v1/docs
+ */
 app.get('/', (req, res) => {
     res.json({
         success: true,
@@ -53,6 +85,7 @@ app.get('/', (req, res) => {
         docs: '/api/v1/docs'
     });
 });
+
 
 app.use('*', (req, res) => {
     res.status(404).json({

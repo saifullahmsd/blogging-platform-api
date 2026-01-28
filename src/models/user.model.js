@@ -136,8 +136,6 @@ userSchema.pre('save', async function (next) {
 
 /**
  * Compares candidate password with stored hash.
- * @param {string} candidatePassword - Plain text password to verify
- * @returns {Promise<boolean>} True if password matches
  */
 userSchema.methods.comparePassword = async function (candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);

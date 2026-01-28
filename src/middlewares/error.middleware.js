@@ -9,8 +9,8 @@ const env = require('../config/validateEnv');
 
 const errorHandler = (err, req, res, next) => {
     let error = { ...err };
-
     error.message = err.message;
+    error.statusCode = err.statusCode;
 
     logger.error({
         message: err.message,
@@ -37,8 +37,9 @@ const errorHandler = (err, req, res, next) => {
         error = new ValidationError(messages.join(', '));
     }
 
-    res.status(error.statusCode || 500).json({
+    res.status(err.statusCode || error.statusCode || 500).json({
         success: false,
+        status: err.status || error.status || 'error',
         message: error.message || 'Server Error',
         ...(error.errors && { errors: error.errors }),
         ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),

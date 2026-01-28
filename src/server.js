@@ -1,12 +1,11 @@
 /**
  * Server Entry Point
- * Initializes database connection, cloudinary connection, starts HTTP server, and handles graceful shutdown.
  */
 const app = require('./api/app');
 const env = require('./config/validateEnv');
 const logger = require('./config/logger');
 const { connectDB, disconnectDB } = require('./config/database');
-const testConnection = require('./config/cloudinary');
+const { testConnection } = require('./config/cloudinary');
 
 
 const PORT = env.PORT || 5000;
