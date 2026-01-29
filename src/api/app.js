@@ -25,6 +25,11 @@ const app = express();
 // Trust proxy for Vercel/reverse proxy
 app.set('trust proxy', 1);
 
+// Helmet with Swagger compatibility
+app.use('/api/v1/docs', (req, res, next) => {
+    next();
+}, helmet({ contentSecurityPolicy: false }));
+
 app.use(helmet());
 
 app.use(cors(corsOptions));
