@@ -123,7 +123,6 @@ userSchema.pre('save', async function (next) {
         const salt = await bcrypt.genSalt(env.BCRYPT_ROUNDS);
         this.password = await bcrypt.hash(this.password, salt);
 
-        // Subtract 1s to ensure JWT issued before password change is invalidated
         if (this.isModified('password') && !this.isNew) {
             this.passwordChangedAt = Date.now() - 1000;
         }
@@ -226,5 +225,4 @@ function parseLockTime(timeString) {
 }
 
 const User = mongoose.model('User', userSchema);
-
 module.exports = User;

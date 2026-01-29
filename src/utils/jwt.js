@@ -59,12 +59,9 @@ class JWTUtils {
         }
     }
 
-    /**
-     * Verify and decode refresh token.
-     * @param {string} token - JWT refresh token
-     * @returns {Object} Decoded token payload
-     * @throws {ApiError} 401 if token invalid or expired
-     */
+
+    // Verify and decode refresh token.
+
     static verifyRefreshToken(token) {
         try {
             const decoded = jwt.verify(token, env.JWT_REFRESH_SECRET);
@@ -105,11 +102,7 @@ class JWTUtils {
         };
     }
 
-    /**
-     * Parse expiry string (e.g., '15m', '7d') to milliseconds.
-     * @param {string} expiry - Duration with unit suffix (s/m/h/d)
-     * @returns {number} Duration in milliseconds
-     */
+
     static parseExpiry(expiry) {
         const units = {
             's': 1000,
