@@ -13,35 +13,50 @@ const logFormat = winston.format.combine(
     winston.format.json()
 );
 
-const logger = winston.createLogger({
-    level: env.LOG_LEVEL,
-    format: logFormat,
-    defaultMeta: { service: 'blogging-api' },
-    transports: [
-        // Error logs
+// Check if running in serverless environment (Vercel)
+const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+const transports = [];
+
+// File transports only for non-serverless environments
+if (!isServerless) {
+    transports.push(
         new winston.transports.File({
             filename: path.join('logs', 'error.log'),
             level: 'error',
-            maxsize: 5242880, // 5MB
+            maxsize: 5242880,
             maxFiles: 5
         }),
-        // Combined logs
         new winston.transports.File({
             filename: path.join('logs', 'combined.log'),
             maxsize: 5242880,
             maxFiles: 5
         })
-    ]
-});
-
-// Console logging in development 
-if (env.NODE_ENV !== 'production' && env.NODE_ENV !== 'test') {
-    logger.add(new winston.transports.Console({
-        format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.simple()
-        )
-    }));
+    );
 }
+
+// Console transport for serverless and development
+if (isServerless || (env.NODE_ENV !== 'production' && env.NODE_ENV !== 'test')) {
+    transports.push(
+        new winston.transports.Console({
+            format: winston.format.combine(
+                winston.format.colorize(),
+                winston.format.simple()
+            )
+        })
+    );
+}
+
+// Fallback: ensure at least one transport exists
+if (transports.length === 0) {
+    transports.push(new winston.transports.Console());
+}
+
+const logger = winston.createLogger({
+    level: env.LOG_LEVEL,
+    format: logFormat,
+    defaultMeta: { service: 'blogging-api' },
+    transports
+});
 
 module.exports = logger;
