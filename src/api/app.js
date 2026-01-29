@@ -22,6 +22,9 @@ const swaggerSpec = require('../config/swagger');
 
 const app = express();
 
+// Trust proxy for Vercel/reverse proxy
+app.set('trust proxy', 1);
+
 app.use(helmet());
 
 app.use(cors(corsOptions));
