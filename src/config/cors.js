@@ -8,7 +8,13 @@ const allowedOrigins = env.ALLOWED_ORIGINS.split(',').map((origin) => origin.tri
 
 const corsOptions = {
     origin: function (origin, callback) {
+
         if (!origin) return callback(null, true);
+
+
+        if (allowedOrigins.includes('*')) {
+            return callback(null, true);
+        }
 
         if (allowedOrigins.includes(origin)) {
             return callback(null, true);

@@ -53,9 +53,11 @@ app.use(cookieParser());
 
 app.use(requestLogger);
 app.use('/health', healthRoutes);
-app.use('/api/v1', v1Routes);
+
 
 app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use('/api/v1', v1Routes);
 
 /**
  * @swagger
