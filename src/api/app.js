@@ -25,12 +25,19 @@ const app = express();
 // Trust proxy for Vercel/reverse proxy
 app.set('trust proxy', 1);
 
-// Helmet with Swagger compatibility
-app.use('/api/v1/docs', (req, res, next) => {
-    next();
-}, helmet({ contentSecurityPolicy: false }));
-
-app.use(helmet());
+// Helmet with Swagger-compatible CSP
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:", "https:"],
+            connectSrc: ["'self'", "https:"],
+        }
+    },
+    crossOriginEmbedderPolicy: false,
+}));
 
 app.use(cors(corsOptions));
 
