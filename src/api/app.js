@@ -43,7 +43,7 @@ const limiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    skip: () => env.NODE_ENV === 'development'
+    skip: (req) => env.NODE_ENV === 'development' || req.path.startsWith('/v1/docs')
 });
 app.use('/api/', limiter);
 
