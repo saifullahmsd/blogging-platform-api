@@ -14,10 +14,10 @@ const options = {
         },
         servers: [
             {
-                url: process.env.VERCEL_URL
-                    ? `https://${process.env.VERCEL_URL}`
+                url: process.env.NODE_ENV === 'production'
+                    ? 'https://blogging-platform-api-swart.vercel.app'
                     : 'http://localhost:5000',
-                description: process.env.VERCEL_URL
+                description: process.env.NODE_ENV === 'production'
                     ? 'Production Server'
                     : 'Development Server'
             }
